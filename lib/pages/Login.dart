@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:sipsn/model/petugas.dart';
 import 'package:sipsn/model/user.dart';
 import 'package:sipsn/nasabah/Navigasi.dart';
 import 'package:sipsn/navigation_menu.dart';
@@ -9,6 +11,8 @@ import 'package:sipsn/pages/Homepage.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as myHttp;
+import 'package:sipsn/pages/Profile.dart';
+import 'package:sipsn/pages/Register.dart';
 
 
 class Login extends StatefulWidget {
@@ -20,10 +24,16 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
 final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-TextEditingController emailController = TextEditingController();
+TextEditingController usernameController = TextEditingController();
 TextEditingController passwordController = TextEditingController();
 late Future<String> _name, _role, _token;
 bool _showPassword = false;
+
+void _toggleObscured() {
+    setState(() {
+      _showPassword = !_showPassword;  // Prevents focus if tap on eye
+    });
+  }
 
 
   @override
@@ -43,7 +53,7 @@ bool _showPassword = false;
 
   void checkToken(Future<String> token, Future<String> role) async {
     String tokenStr = await token;
-    String roleStr = await role;
+    String roleStr = await role; //pake ini buat login
     if (tokenStr != "" &&
         (roleStr != "superadmin" && roleStr != "admin" && roleStr != "nasabah")) {
       Future.delayed(Duration(seconds: 1), () {
@@ -65,7 +75,7 @@ bool _showPassword = false;
 
 
   Future<void> login(String username, String password) async {
-    User? user;
+    Welcome? user;
     Map<String, String> body = {
       "username": username,
       "password": password,
@@ -74,15 +84,40 @@ bool _showPassword = false;
 
     try {
       var response = await myHttp.post(
-        Uri.parse('http://192.168.56.131:8080/api/login'),
+        Uri.parse('http://192.168.1.5:8080/api/login'),
         // Uri.parse('http://pkmsmkteladankertasemaya.com/api/login'),
         body: json.encode(body),
         headers: headers,
       );
 
-      if (response.statusCode == 200) {
-        user = User.fromJson(json.decode(response.body));
-        saveUser(user.data.token, user.data.role, user.data.student.name);
+
+      if (response.statusCode == 200) { //if user data role == petugas dia ke petugas
+        // print(json.decode(response.body));
+        var datas = (json.decode(response.body));
+
+        if (datas["data"]["role"] == "nasabah") {
+         Navigator.pushReplacement(context, 
+            MaterialPageRoute(
+            builder: (context) => Navigasi()
+            ));
+        print(datas["data"]["role"]);
+        user = Welcome.fromJson(json.decode(response.body));
+        saveUser(user.data.token, user.data.role, user.data.nasabah.name);
+        }
+
+        else {
+            Navigator.pushReplacement(context, 
+            MaterialPageRoute(
+            builder: (context) => NavigationMenu()
+            ));
+            print(json.decode(response.body));
+            var petuas = Will.fromJson(json.decode(response.body));
+            print(petuas.data.petugas.name);
+            // user = Welcomes.fromJson(json.decode(response.body)) as Welcome?;
+            saveUser(petuas.data.token, petuas.data.role, petuas.data.petugas.name);
+            print(petuas.data.petugas.name);
+        }
+        
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Username atau Password salah")),
@@ -137,8 +172,8 @@ bool _showPassword = false;
             flex: 3,
             child: Container(
               decoration: BoxDecoration(
-                image: DecorationImage(image: AssetImage("assets/images/model.jpg"),
-                fit: BoxFit.cover
+                image: DecorationImage(image: AssetImage("assets/images/imy.jpeg"),
+                fit: BoxFit.fitHeight
                 )
               ),
             ),
@@ -153,12 +188,21 @@ bool _showPassword = false;
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget> [
                         Text(
-                          "SIGN IN",
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30, color: Color(0xFF00A368))
+                          "Masuk Akun",
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25, color: Color(0xFF00A368))
                         ),
-                        Text(
-                          "SIGN UP",
-                          style: Theme.of(context).textTheme.button,
+                        ElevatedButton(
+                        onPressed: (){
+                           Navigator.of(context).push(
+                           MaterialPageRoute(
+                          builder: (context) => Register(),
+                    ),
+                  );
+                        }, 
+                        style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF00A368),
+                        ),
+                        child: Text("Daftar",style: TextStyle(color: Colors.white, fontSize: 15),)
                         ),
                       ],
                     ),
@@ -176,7 +220,7 @@ bool _showPassword = false;
                           ),
                       Expanded(
                         child: TextField(
-                          controller: emailController,
+                          controller: usernameController,
                           decoration: InputDecoration(
                             hintText: "Email Address"
                           ),
@@ -196,53 +240,73 @@ bool _showPassword = false;
                     Expanded(
                       child: TextField(
                         controller: passwordController,
+                        keyboardType: TextInputType.visiblePassword,
+                        obscureText: _showPassword,
                         decoration: InputDecoration(
                           hintText: "Password",
-                          suffixIcon: IconButton(
-                            onPressed: () {
-                                setState(() {
-                                  _showPassword = !_showPassword;
-                                });
-                              }, 
-                            icon: Icon(_showPassword ? Icons.visibility : Icons.visibility_off ),
-                            
-                            )
+                          suffixIcon: Padding(
+                            padding: EdgeInsets.fromLTRB(0, 0, 4, 0),
+                            child: GestureDetector(
+                              onTap: _toggleObscured,
+                              child: Icon(
+                                _showPassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                              ),
+                            ),
+                          )
                         ),
                       ) 
                       ),
                       ],
                     ),
-                    Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 30),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          InkWell(
-                onTap: () {
-                  login(
-                                  emailController.text,
+                    SizedBox(height: 20,),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: (){
+                          login(
+                                  usernameController.text,
                                   passwordController.text,
                                 );
-                },
-                child: Ink(
-                  padding: EdgeInsets.symmetric(horizontal: 80, vertical: 16),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    color: Color(0xFF00A368),
-                  ),
-                  child: Text(
-                    "Login",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-                        ],
+                        }, 
+                        style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF00A368),
                       ),
-                    )
+                        child: Text("Login", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)
+                        
+                        ),
+                    ),
+              //       Padding(
+              //         padding: const EdgeInsets.only(bottom: 30),
+              //         child: Row(
+              //           mainAxisAlignment: MainAxisAlignment.center,
+              //           children: <Widget>[
+              //             InkWell(
+              //   onLongPress: () {
+              //     login(
+              //                     usernameController.text,
+              //                     passwordController.text,
+              //                   );
+              //   },
+              //   child: Ink(
+              //     padding: EdgeInsets.symmetric(horizontal: 80, vertical: 16),
+              //     decoration: BoxDecoration(
+              //       borderRadius: BorderRadius.circular(30),
+              //       color: Color(0xFF00A368),
+              //     ),
+              //     child: Text(
+              //       "Login",
+              //       style: TextStyle(
+              //           color: Colors.white,
+              //           fontSize: 18,
+              //           fontWeight: FontWeight.bold),
+              //     ),
+              //   ),
+              // ),
+              //           ],
+              //         ),
+              //       )
                   ],
                 ),
               )

@@ -1,210 +1,158 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:sipsn/model/Petugas/getjadwal.dart';
+import 'package:sipsn/model/Petugas/getpetugas.dart';
+import 'package:sipsn/model/getprofile.dart';
+import 'package:sipsn/pages/ChangeTrash.dart';
 import 'package:sipsn/pages/Profile.dart';
 import 'package:sipsn/widgets/BottomCartSheet.dart';
 import 'package:sipsn/widgets/CategoriesWidget.dart';
 import 'package:sipsn/widgets/ItemsWidget.dart';
 import 'package:sipsn/widgets/PopularItemsWidget.dart';
 // import 'package:sliding_sheet/sliding_sheet.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as myHttp;
+import 'package:intl/intl.dart';
 
-class Homepage extends StatelessWidget {
+class Homepage extends StatefulWidget {
   const Homepage({super.key});
 
+  @override
+  State<Homepage> createState() => _HomepageState();
+}
+
+class _HomepageState extends State<Homepage> {
+
+final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+late Future<String> _token;
+GetPetugas? profile;
+  List<Petugass> profiles = [];
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    _token = _prefs.then((SharedPreferences prefs) {
+      return prefs.getString("token") ?? "";
+    });
+  }
+
+Future<Datum> getData() async {
+    Datum user;
+    final Map<String, String> headers = {
+      'Authorization': 'Bearer ' + (await _token)
+    };
+    final response = await myHttp.get(
+      // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
+      Uri.parse('http://10.0.141.25:8080/api/profile-petugas'),
+      headers: headers,
+    );
+    final Map<String, dynamic> jsonResult = jsonDecode(response.body);
+    user = Datum.fromJson(jsonResult['data']['petugas']);
+    log(user.toString());
+    return user;
+    profile!.data.forEach((element) {
+      profiles.add(element);
+    });
+  }
+
+  Future<List<Jadwal>> getJadwal() async {
+    // Riwayat user;
+    final Map<String, String> headers = {
+      'Authorization': 'Bearer ' + (await _token)
+    };
+    final response = await myHttp.get(
+      // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
+      Uri.parse('http://192.168.1.5:8080/api/lihat-lokasi'),
+      headers: headers,
+    );
+    Map<String, dynamic> jsonResult = jsonDecode(response.body);
+    print(jsonResult['data']);
+    List<Jadwal> riwayat = [];
+    for (var item in jsonResult['data']['jadwal'] as List) {
+      Jadwal tasks = Jadwal.fromJson(item);
+
+      riwayat.add(tasks);
+
+      print(riwayat.first);
+    }
+    // print("data riwayat");
+    return riwayat;
+
+    // return jsonResult.map((e) => Riwayat.fromJson(e)).toList();
+  }
+
+
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFF00A368),
-      body: SafeArea(
-          child: SingleChildScrollView(
+      body: Center(
+        child: 
+            FutureBuilder(
+              future: getJadwal(), 
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                    // until data is fetched, show loader
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.hasData) {
+                    // once data is fetched, display it on screen (call buildPosts())
+                    final posts = snapshot.data!;
+                    return buildPosts(posts);
+                  } else {
+                    // if no data, show simple Text
+                    return const Text("No data available");
+                  }
+              },
+              ) , 
+      )
+    );
+  }
+  
+  Widget buildPosts(List<Jadwal> posts) {
+    return SafeArea(
+      child: SingleChildScrollView(
         child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.only(right: 20, left: 15, top: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Icon(
-                    Icons.menu,
-                    color: Colors.white,
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                        color: Color(0xFF00A368),
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.white.withOpacity(0.5),
-                            blurRadius: 2,
-                          ),
-                        ]),
-                    child: InkWell(
-                      onTap: () {
-                        // showSlidingBottomSheet(
-                        //   context, 
-                        //   builder: (context){
-                        //     return SlidingSheetDialog(
-                        //       elevation: 8,
-                        //       cornerRadius: 16,
-                        //       builder: (context, state) {
-                        //         return BottomCartSheet();
-                        //       },
-                        //     );
-                        //   }
-                        //   );
-                      },
-                      child: Icon(
-                        CupertinoIcons.cart,
-                        size: 30,
-                        color: Colors.white,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-
-            //welcome text
-            Container(
-              alignment: Alignment.centerLeft,
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Hallo, Petugas",
-                    style: TextStyle(
-                      fontSize: 30,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    "Miftahus Surur",
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                  Text(
-                    "Tetap Semangat Melakukan Pekerjaan Ini",
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                  Text(
-                    "Penyetoran Sampah", textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 30,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            //search widget
-            
-                  // Icon(Icons.search),
-                  // Container(
-                  //   margin: EdgeInsets.only(left: 10),
-                  //   width: 200,
-                  //   child: TextFormField(
-                  //     decoration: InputDecoration(
-                  //       hintText: "Search Here....",
-                  //       border: InputBorder.none,
-                  //     ),
-                  //   ),
-                  // ),
-                  // Container(
-                  //   margin: EdgeInsets.all(15),
-                  //   padding: EdgeInsets.symmetric(horizontal: 15),
-                  //   height: 150,
-                  //   // padding: EdgeInsets.all(30),
-                  //   decoration: BoxDecoration(
-                  //     borderRadius: BorderRadius.all(Radius.circular(20)),
-                  //     color: Color(0xfff1f3f6)
-                  //   ),
-                  //   child: Row(
-                  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //     children: [
-                  //       Column(
-                  //         mainAxisAlignment: MainAxisAlignment.center,
-                  //         crossAxisAlignment: CrossAxisAlignment.start,
-                  //         children: [
-                  //           Text(
-                  //             "20,000",
-                  //             style: TextStyle(
-                  //               fontSize: 22,
-                  //               fontWeight: FontWeight.w700
-                  //             ),
-                  //           ),
-                  //           SizedBox(height: 5,),
-                  //           Text(
-                  //             "Point anda",
-                  //             style: TextStyle(
-                  //               fontSize: 16,
-                  //               fontWeight: FontWeight.w400
-                  //             ),
-                  //           ),
-                  //         ],
-                  //       ),
-                  //       Container(
-                  //         height: 60,
-                  //         width: 60,
-                  //         decoration: BoxDecoration(
-                  //           shape: BoxShape.circle,
-                  //           color: Color(0xFF00A368),
-                  //         ),
-                  //         child: Icon(
-                  //           Icons.money,
-                  //           size: 30,
-                  //         ),
-                  //       )
-                  //     ],
-                  //   )
-                  // ),
-                   
-
-            
-
-            //products widgets
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              margin: EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                  color: Color(0xFF00A368),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  )),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
+          mainAxisAlignment: MainAxisAlignment.start,
+            children: List.generate(posts.length, (index) {
+              // SizedBox(height: 10,);
+              final post = posts[index];
+              DateTime dateTime = DateTime.parse(post.jadwalTugas.mulaiPenjemputan.toString());
+              DateTime dateTimes = DateTime.parse(post.jadwalTugas.selesaiPenjemputan.toString());
+              return GestureDetector(
                 onTap: () {
                   Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => Profile(),
+                    builder: (context) => ChangeTrash(id: post.jadwalTugasId,),
                   ),
                 );
                 },
-                child: Card(
-                child: ListTile(
-                  leading: Icon(Icons.check_box,color: Color(0xFF00A368),),
-                  title: Text('21 Mei 2024', style: TextStyle(fontWeight: FontWeight.bold),),
-                  subtitle: Text('Sukses Tukar Sampah'),
-                  trailing: Icon(Icons.more_vert),
+                child: Container(
+                  color: Colors.white,
+                margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                height: 100,
+                  child: ListTile(
+                              leading: Icon(Icons.location_city,color: Color(0xFF00A368),),
+                              title: Text("Mulai: ${dateTime.day}-${dateTime.month}-${dateTime.year}  Selesai: ${dateTimes.day}-${dateTimes.month}-${dateTimes.year}", style: TextStyle(fontWeight: FontWeight.bold),),
+                              subtitle: Text(post.jadwalTugas.keterangan.toString()),
+                              // trailing: Icon(CupertinoIcons.money_dollar),
+                    textColor: Color(0xFF00A368),
+                  ),
                 ),
-              ),
-              ),
-                  // CategoriesWidget(),
-                  // PopularItemsWidget(),
-                   //ItemsWidget()
-                  
-                ],
-              ),
+              );
+            }),
             ),
-          ],
-        ),
-      )),
+      ),
     );
+
   }
 }
+
+

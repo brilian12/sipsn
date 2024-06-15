@@ -39,8 +39,8 @@ class _NavigasiState extends State<Navigasi> {
             icon: Icon(Icons.home)
             ),
           BottomNavigationBarItem(
-            label: "Transaksi",
-            icon: Icon(Icons.menu)
+            label: "Tukar",
+            icon: Icon(CupertinoIcons.money_dollar)
             ),
           BottomNavigationBarItem(
             label: "Profil",

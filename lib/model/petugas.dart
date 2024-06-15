@@ -1,23 +1,24 @@
+import 'dart:convert';
 
 
 import 'dart:convert';
 
-Welcome welcomeFromJson(String str) => Welcome.fromJson(json.decode(str));
+Will willFromJson(String str) => Will.fromJson(json.decode(str));
 
-String welcomeToJson(Welcome data) => json.encode(data.toJson());
+String willToJson(Will data) => json.encode(data.toJson());
 
-class Welcome {
+class Will {
     bool success;
     String message;
     Data data;
 
-    Welcome({
+    Will({
         required this.success,
         required this.message,
         required this.data,
     });
 
-    factory Welcome.fromJson(Map<String, dynamic> json) => Welcome(
+    factory Will.fromJson(Map<String, dynamic> json) => Will(
         success: json["success"],
         message: json["message"],
         data: Data.fromJson(json["data"]),
@@ -39,8 +40,7 @@ class Data {
     DateTime updatedAt;
     String token;
     String tokenType;
-    Nasabah nasabah;
-    // Petugas petugas;
+    Petugas petugas;
 
     Data({
         required this.id,
@@ -51,8 +51,7 @@ class Data {
         required this.updatedAt,
         required this.token,
         required this.tokenType,
-        required this.nasabah,
-        // required this.petugas,
+        required this.petugas,
     });
 
     factory Data.fromJson(Map<String, dynamic> json) => Data(
@@ -64,8 +63,7 @@ class Data {
         updatedAt: DateTime.parse(json["updated_at"]),
         token: json["token"],
         tokenType: json["token_type"],
-        nasabah: Nasabah.fromJson(json["nasabah"]),
-        // petugas: Petugas.fromJson(json["petugas"]),
+        petugas: Petugas.fromJson(json["petugas"]),
     );
 
     Map<String, dynamic> toJson() => {
@@ -77,41 +75,40 @@ class Data {
         "updated_at": updatedAt.toIso8601String(),
         "token": token,
         "token_type": tokenType,
-        "nasabah": nasabah.toJson(),
-        // "petugas": petugas.toJson(),
+        "petugas": petugas.toJson(),
     };
 }
 
-class Nasabah {
+class Petugas {
     int id;
     int userId;
+    int adminId;
     String name;
-    String alamat;
     String noHp;
-    String kodePengguna;
+    String alamat;
     DateTime createdAt;
     DateTime updatedAt;
     dynamic deletedAt;
 
-    Nasabah({
+    Petugas({
         required this.id,
         required this.userId,
+        required this.adminId,
         required this.name,
-        required this.alamat,
         required this.noHp,
-        required this.kodePengguna,
+        required this.alamat,
         required this.createdAt,
         required this.updatedAt,
         required this.deletedAt,
     });
 
-    factory Nasabah.fromJson(Map<String, dynamic> json) => Nasabah(
+    factory Petugas.fromJson(Map<String, dynamic> json) => Petugas(
         id: json["id"],
         userId: json["user_id"],
+        adminId: json["admin_id"],
         name: json["name"],
-        alamat: json["alamat"],
         noHp: json["no_hp"],
-        kodePengguna: json["kode_pengguna"],
+        alamat: json["alamat"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
         deletedAt: json["deleted_at"],
@@ -120,60 +117,12 @@ class Nasabah {
     Map<String, dynamic> toJson() => {
         "id": id,
         "user_id": userId,
+        "admin_id": adminId,
         "name": name,
-        "alamat": alamat,
         "no_hp": noHp,
-        "kode_pengguna": kodePengguna,
+        "alamat": alamat,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
         "deleted_at": deletedAt,
     };
 }
-
-// class Petugas {
-//     int id;
-//     int userId;
-//     int adminId;
-//     String name;
-//     String noHp;
-//     String alamat;
-//     DateTime createdAt;
-//     DateTime updatedAt;
-//     dynamic deletedAt;
-
-//     Petugas({
-//         required this.id,
-//         required this.userId,
-//         required this.adminId,
-//         required this.name,
-//         required this.noHp,
-//         required this.alamat,
-//         required this.createdAt,
-//         required this.updatedAt,
-//         required this.deletedAt,
-//     });
-
-//     factory Petugas.fromJson(Map<String, dynamic> json) => Petugas(
-//         id: json["id"],
-//         userId: json["user_id"],
-//         adminId: json["admin_id"],
-//         name: json["name"],
-//         noHp: json["no_hp"],
-//         alamat: json["alamat"],
-//         createdAt: DateTime.parse(json["created_at"]),
-//         updatedAt: DateTime.parse(json["updated_at"]),
-//         deletedAt: json["deleted_at"],
-//     );
-
-//     Map<String, dynamic> toJson() => {
-//         "id": id,
-//         "user_id": userId,
-//         "admin_id": adminId,
-//         "name": name,
-//         "no_hp": noHp,
-//         "alamat": alamat,
-//         "created_at": createdAt.toIso8601String(),
-//         "updated_at": updatedAt.toIso8601String(),
-//         "deleted_at": deletedAt,
-//     };
-// }

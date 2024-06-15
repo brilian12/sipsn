@@ -1,72 +1,86 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:sipsn/model/Petugas/getriwayat.dart';
 import 'package:sipsn/pages/ChangePoint.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as myHttp;
+import 'dart:convert';
 
-class Transaction extends StatelessWidget {
-
+class Transaction extends StatefulWidget {
   const Transaction({super.key});
 
   @override
+  State<Transaction> createState() => _TransactionState();
+}
+
+class _TransactionState extends State<Transaction> {
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  late Future<String> _token;
+  late Future<List<Riwayatp>> riwayat;
+  final riwayatListKey = GlobalKey<_TransactionState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _token = _prefs.then((SharedPreferences prefs) {
+      return prefs.getString("token") ?? "";
+    });
+    riwayat = getRiwayat();
+  }
+
+  Future<List<Riwayatp>> getRiwayat() async {
+    // Riwayat user;
+    final Map<String, String> headers = {
+      'Authorization': 'Bearer ' + (await _token)
+    };
+    final response = await myHttp.get(
+      // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
+      Uri.parse('http://192.168.1.5:8080/api/lihat-riwayat-tukar-poin-petugas'),
+      headers: headers,
+    );
+    Map<String, dynamic> jsonResult = jsonDecode(response.body);
+    print(jsonResult['data']);
+    List<Riwayatp> riwayat = [];
+    for (var item in jsonResult['data']['tukar'] as List) {
+      Riwayatp tasks = Riwayatp.fromJson(item);
+
+      riwayat.add(tasks);
+
+      print(riwayat.first);
+    }
+    // print("data riwayat");
+    return riwayat;
+
+    // return jsonResult.map((e) => Riwayat.fromJson(e)).toList();
+  }
+
+
+ @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('kk:mm:ss \n EEE d MMM').format(now);
-    return Scaffold( appBar: AppBar(
-      title: Text("Tukar Poin"),
-      // backgroundColor: Color(0xFF00A368),
-    ),
-    body: Container(
-      color: Color(0xFF00A368),
-      child: ListView(
-                children: [
-                  SizedBox(height: 20,),
-            Column(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                   
-                  },
-                  child: Card(
-                  child: ListTile(
-                    leading: Icon(Icons.check_box,color: Color(0xFF00A368),),
-                    title: Text(formattedDate, style: TextStyle(fontWeight: FontWeight.bold),),
-                    subtitle: Text('Sukses Tukar Poin'),
-                    trailing: Icon(CupertinoIcons.money_dollar),
-                  ),
-                ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    
-                  },
-                  child: Card(
-                  child: ListTile(
-                    leading: Icon(Icons.check_box,color: Color(0xFF00A368),),
-                    title: Text('21 Mei 2024', style: TextStyle(fontWeight: FontWeight.bold),),
-                    subtitle: Text('Sukses Tukar Poin'),
-                    trailing: Icon(CupertinoIcons.money_dollar),
-                  ),
-                ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    
-                  },
-                  child: Card(
-                  child: ListTile(
-                    leading: Icon(Icons.check_box,color: Color(0xFF00A368),),
-                    title: Text('22 Mei 2024', style: TextStyle(fontWeight: FontWeight.bold),),
-                    subtitle: Text('Sukses Tukar Poin'),
-                    trailing: Icon(CupertinoIcons.money_dollar),
-                  ),
-                ),
-                ),
-                
-              ],
-            ),
-          ],
+    return Scaffold( 
+      backgroundColor: Color(0xFF00A368),
+    body: Center(
+        // FutureBuilder
+        child: FutureBuilder<List<Riwayatp>>(
+          future: getRiwayat(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              // until data is fetched, show loader
+              return const CircularProgressIndicator();
+            } else if (snapshot.hasData) {
+              // once data is fetched, display it on screen (call buildPosts())
+              final posts = snapshot.data!;
+              return buildPosts(posts);
+            } else {
+              // if no data, show simple Text
+              return const Text("No data available");
+            }
+          },
+        ),
       ),
-    ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
           Navigator.of(context).push(
@@ -81,4 +95,38 @@ class Transaction extends StatelessWidget {
       ),
     );
   }
+
+Widget buildPosts(List<Riwayatp> posts) {
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+            children: List.generate(posts.length, (index) {
+              // SizedBox(height: 10,);
+              final post = posts[index];
+              DateTime dateTime = DateTime.parse(post.tanggal.toString());
+              return GestureDetector(
+                child: Container(
+                  color: Colors.white,
+                margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                height: 100,
+                  child: ListTile(
+                              leading: Icon(Icons.location_city,color: Color(0xFF00A368),),
+                              title: Text("Tanggal : ${dateTime.day}-${dateTime.month}-${dateTime.year}", style: TextStyle(fontWeight: FontWeight.bold),),
+                              subtitle: Text(" Jumlah Point Ditukar : ${post.status}"),
+                              // trailing: Icon(CupertinoIcons.money_dollar),
+                    textColor: Color(0xFF00A368),
+                  ),
+                ),
+              );
+            }),
+            ),
+      ),
+    );
+
+  }
+  
 }
+
+
