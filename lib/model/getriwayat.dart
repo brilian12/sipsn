@@ -40,7 +40,8 @@ class Riwayat {
     DateTime tanggal;
     String status;
     String instansi;
-    // int kurang_poin;
+    int kurang_poin;
+    int tambah_poin;
 
     Riwayat({
         required this.id,
@@ -49,7 +50,8 @@ class Riwayat {
         required this.tanggal,
         required this.status,
         required this.instansi,
-        // required this.kurang_poin,
+        required this.kurang_poin,
+        required this.tambah_poin,
     });
 
     factory Riwayat.fromJson(Map<String, dynamic> json) => Riwayat(
@@ -59,7 +61,8 @@ class Riwayat {
         tanggal: DateTime.parse(json["tanggal"]),
         status: json["status"],
         instansi: json["instansi"],
-        // kurang_poin: json["kurang_poin"]
+        kurang_poin: json["kurang_poin"],
+        tambah_poin: json["tambah_poin"]
     );
 
     
@@ -71,7 +74,8 @@ class Riwayat {
         "tanggal": tanggal.toIso8601String(),
         "status": status,
         "instansi": instansi,
-        // "kurang_poin": kurang_poin
+        "kurang_poin": kurang_poin,
+        "tambah_poin": tambah_poin
     };
     
 }

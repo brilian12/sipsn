@@ -5,10 +5,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:sipsn/model/Petugas/getpetugas.dart';
 import 'package:sipsn/model/getprofile.dart';
 import 'package:sipsn/model/petugas.dart';
+import 'package:sipsn/pages/EditProfile.dart';
 import 'package:sipsn/pages/Login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as myHttp;
 import 'dart:convert';
+import 'package:google_fonts/google_fonts.dart';
+
 
 
 
@@ -43,7 +46,7 @@ class _ProfileState extends State<Profile> {
     };
     final response = await myHttp.get(
       // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
-      Uri.parse('http://192.168.1.5:8080/api/profile-petugas'),
+      Uri.parse('http://10.0.172.63:8080/api/profile-petugas'),
       headers: headers,
     );
     final Map<String, dynamic> jsonResult = jsonDecode(response.body);
@@ -100,6 +103,28 @@ void _logout(BuildContext context) async {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // appBar: AppBar(
+      //   leading: ElevatedButton(
+      //                 child: const Text('Logout'),
+      //                 onPressed: () {
+      //                   _showLogoutConfirmationDialog(context);
+      //                 },
+      //                 style: ElevatedButton.styleFrom(
+      //                   backgroundColor: Colors.red,
+      //                 ),
+      //               ),
+      // ),
+      appBar: AppBar(
+        title: 
+          Text(
+              "Profil",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.interTight(
+                        textStyle: TextStyle(color: Colors.white, letterSpacing: .5,fontWeight: FontWeight.bold,fontSize: 20,),
+                      ),
+              ),
+            backgroundColor: Color(0xFF00A368),
+        ),
       backgroundColor: Color(0xFF00A368),
       body: FutureBuilder<Datum>(
         future: getData(),
@@ -119,14 +144,14 @@ void _logout(BuildContext context) async {
                     ),
                     CircleAvatar(
                         radius: 70,
-                        backgroundImage: AssetImage("assets/images/model.jpg")),
+                        backgroundImage: AssetImage("assets/images/user icon.png")),
                     const SizedBox(
                       height: 20,
                     ),
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(25),
                         boxShadow: [
                           BoxShadow(
                             offset: Offset(8, 5),
@@ -140,7 +165,7 @@ void _logout(BuildContext context) async {
                         title: const Text("Name"),
                         subtitle: Text(snapshot.data!.name),
                         leading: const Icon(CupertinoIcons.person),
-                        tileColor: Colors.white,
+                        tileColor: Color(0xFF00A368),
                       ),
                     ),
                     const SizedBox(
@@ -149,7 +174,7 @@ void _logout(BuildContext context) async {
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(25),
                         boxShadow: [
                           BoxShadow(
                             offset: Offset(8, 5),
@@ -163,7 +188,7 @@ void _logout(BuildContext context) async {
                         title: const Text("Whatsapp"),
                         subtitle: Text(snapshot.data!.no_hp),
                         leading: const Icon(CupertinoIcons.phone_circle),
-                        tileColor: Colors.white,
+                        tileColor: Color(0xFF00A368),
                       ),
                     ),
                     const SizedBox(
@@ -172,7 +197,7 @@ void _logout(BuildContext context) async {
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(25),
                         boxShadow: [
                           BoxShadow(
                             offset: Offset(8, 5),
@@ -186,7 +211,7 @@ void _logout(BuildContext context) async {
                         title: const Text("Alamat"),
                         subtitle: Text(snapshot.data!.alamat),
                         leading: const Icon(CupertinoIcons.location_circle),
-                        tileColor: Colors.white,
+                        tileColor: Color(0xFF00A368),
                       ),
                     ),
                     const SizedBox(
@@ -195,7 +220,7 @@ void _logout(BuildContext context) async {
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(25),
                         boxShadow: [
                           BoxShadow(
                             offset: Offset(8, 5),
@@ -209,18 +234,37 @@ void _logout(BuildContext context) async {
                         title: const Text("Email"),
                         subtitle: Text(snapshot.data!.username  ),
                         leading: const Icon(CupertinoIcons.mail),
-                        tileColor: Colors.white,
+                        tileColor: Color(0xFF00A368),
                       ),
                     ),
                     const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                      child: const Text('Edit Profil', style: TextStyle(color: Color(0xFF00A368))),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => EditProfile(id: snapshot.data!.id, name: snapshot.data!.name, notelp: snapshot.data!.no_hp, alamat: snapshot.data!.alamat, email: snapshot.data!.username),
+                        ),
+                      );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                      ),
+                    ),
+                    SizedBox(width: 20,),
                     ElevatedButton(
-                      child: const Text('Logout',style: TextStyle(color: Colors.white),),
+                      child: const Text('Logout', style: TextStyle(color: Colors.white)),
                       onPressed: () {
                         _showLogoutConfirmationDialog(context);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red[700],
                       ),
+                    ),
+                      ],
                     ),
                   ],
                 ),

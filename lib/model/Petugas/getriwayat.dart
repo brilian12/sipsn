@@ -9,6 +9,7 @@ class Riwayatp {
     DateTime tanggal;
     String status;
     String instansi;
+    int kurang_poin;
 
     Riwayatp({
         required this.id,
@@ -18,6 +19,7 @@ class Riwayatp {
         required this.tanggal,
         required this.status,
         required this.instansi,
+        required this.kurang_poin
     });
 
     factory Riwayatp.fromJson(Map<String, dynamic> json) => Riwayatp(
@@ -28,6 +30,7 @@ class Riwayatp {
         tanggal: DateTime.parse(json["tanggal"]),
         status: json["status"],
         instansi: json["instansi"],
+        kurang_poin: json["kurang_poin"],
     );
 
     
@@ -37,9 +40,10 @@ class Riwayatp {
         "point_id": point_id,
         "admin_id": admin_id,
         "nasabah_id": nasabah_id,
-        // "tanggal": tanggal.toIso8601String(),
+        "tanggal": tanggal.toIso8601String(),
         "status": status,
         "instansi": instansi,
+        "kurang_poin": kurang_poin,
         // "tambah_poin": tambah_poin
     };
     

@@ -46,6 +46,7 @@ class _NavigasiState extends State<Navigasi> {
             label: "Profil",
             icon: Icon(Icons.person)
             ),
+            
         ],
         ),
     );

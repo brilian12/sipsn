@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as myHttp;
 import 'package:sipsn/model/getprofile.dart';
+import 'package:sipsn/nasabah/Editprofil.dart';
 import 'package:sipsn/pages/Login.dart';
 
 class Profil extends StatefulWidget {
@@ -35,7 +37,7 @@ class _ProfilState extends State<Profil> {
     };
     final response = await myHttp.get(
       // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
-      Uri.parse('http://192.168.1.5:8080/api/profile-nasabah'),
+      Uri.parse('http://10.0.172.63:8080/api/profile-nasabah'),
       headers: headers,
     );
     final Map<String, dynamic> jsonResult = jsonDecode(response.body);
@@ -119,14 +121,14 @@ class _ProfilState extends State<Profil> {
                     ),
                     CircleAvatar(
                         radius: 70,
-                        backgroundImage: AssetImage("assets/images/model.jpg")),
+                        backgroundImage: AssetImage("assets/images/user icon.png")),
                     const SizedBox(
                       height: 20,
                     ),
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(25),
                         boxShadow: [
                           BoxShadow(
                             offset: Offset(8, 5),
@@ -140,7 +142,7 @@ class _ProfilState extends State<Profil> {
                         title: const Text("Name"),
                         subtitle: Text(snapshot.data!.name),
                         leading: const Icon(CupertinoIcons.person),
-                        tileColor: Colors.white,
+                        tileColor: Color(0xFF00A368),
                       ),
                     ),
                     const SizedBox(
@@ -149,7 +151,7 @@ class _ProfilState extends State<Profil> {
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(25),
                         boxShadow: [
                           BoxShadow(
                             offset: Offset(8, 5),
@@ -163,7 +165,7 @@ class _ProfilState extends State<Profil> {
                         title: const Text("Whatsapp"),
                         subtitle: Text(snapshot.data!.no_hp),
                         leading: const Icon(CupertinoIcons.phone_circle),
-                        tileColor: Colors.white,
+                        tileColor: Color(0xFF00A368),
                       ),
                     ),
                     const SizedBox(
@@ -172,7 +174,7 @@ class _ProfilState extends State<Profil> {
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(25),
                         boxShadow: [
                           BoxShadow(
                             offset: Offset(8, 5),
@@ -186,7 +188,7 @@ class _ProfilState extends State<Profil> {
                         title: const Text("Alamat"),
                         subtitle: Text(snapshot.data!.alamat),
                         leading: const Icon(CupertinoIcons.location_circle),
-                        tileColor: Colors.white,
+                        tileColor: Color(0xFF00A368),
                       ),
                     ),
                     const SizedBox(
@@ -195,7 +197,7 @@ class _ProfilState extends State<Profil> {
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(25),
                         boxShadow: [
                           BoxShadow(
                             offset: Offset(8, 5),
@@ -209,10 +211,27 @@ class _ProfilState extends State<Profil> {
                         title: const Text("Email"),
                         subtitle: Text(snapshot.data!.username  ),
                         leading: const Icon(CupertinoIcons.mail),
-                        tileColor: Colors.white,
+                        tileColor: Color(0xFF00A368),
                       ),
                     ),
                     const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                      child: const Text('Edit Profil', style: TextStyle(color: Color(0xFF00A368))),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => EditProfil(id: snapshot.data!.id, name: snapshot.data!.name, notelp: snapshot.data!.no_hp, alamat: snapshot.data!.alamat, email: snapshot.data!.username),
+                        ),
+                      );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                      ),
+                    ),
+                    SizedBox(width: 20,),
                     ElevatedButton(
                       child: const Text('Logout', style: TextStyle(color: Colors.white)),
                       onPressed: () {
@@ -221,6 +240,8 @@ class _ProfilState extends State<Profil> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red[700],
                       ),
+                    ),
+                      ],
                     ),
                   ],
                 ),

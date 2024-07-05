@@ -17,6 +17,8 @@ import 'package:sipsn/widgets/PopularItemsWidget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as myHttp;
 import 'package:intl/intl.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -49,7 +51,7 @@ Future<Datum> getData() async {
     };
     final response = await myHttp.get(
       // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
-      Uri.parse('http://10.0.141.25:8080/api/profile-petugas'),
+      Uri.parse('http://10.0.172.63:8080/api/profile-petugas'),
       headers: headers,
     );
     final Map<String, dynamic> jsonResult = jsonDecode(response.body);
@@ -68,7 +70,7 @@ Future<Datum> getData() async {
     };
     final response = await myHttp.get(
       // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
-      Uri.parse('http://192.168.1.5:8080/api/lihat-lokasi'),
+      Uri.parse('http://10.0.172.63:8080/api/lihat-lokasi'),
       headers: headers,
     );
     Map<String, dynamic> jsonResult = jsonDecode(response.body);
@@ -92,26 +94,124 @@ Future<Datum> getData() async {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF00A368),
-      body: Center(
-        child: 
-            FutureBuilder(
-              future: getJadwal(), 
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                    // until data is fetched, show loader
-                    return const CircularProgressIndicator();
-                  } else if (snapshot.hasData) {
-                    // once data is fetched, display it on screen (call buildPosts())
-                    final posts = snapshot.data!;
-                    return buildPosts(posts);
-                  } else {
-                    // if no data, show simple Text
-                    return const Text("No data available");
-                  }
-              },
-              ) , 
-      )
+      backgroundColor: Colors.white10,
+      body: SafeArea(
+          child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(height: 20,),
+                  FutureBuilder(
+                  future: getData(), 
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } 
+                    else if (snapshot.hasError) {
+                      return Center(child: Text(snapshot.error.toString()));
+                    }
+                    else {
+                      return Text(
+                        "Hallo, ${snapshot.data!.name}",
+                        style:  GoogleFonts.interTight(
+                      textStyle: TextStyle(color: Color(0xFF00A368), letterSpacing: .5,fontWeight: FontWeight.bold,fontSize: 30,),
+                    ),
+                        );
+                    }
+                  },
+                ),
+                Container(
+                  padding: EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Color(0xFF00A368),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.person,size: 50.0,color: Colors.white,),
+                ),
+                ],
+              ),   
+              ),
+              
+              
+              // SmoothPageIndicator(
+              //   controller: _controller, 
+              //   count: 3,
+              //   effect: ExpandingDotsEffect(
+              //     // activeDotColor: Colors.grey.shade800
+              //   ),
+              //   ),
+
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // MyButton(iconimage: "assets/images/ambil.jpg", buttontext: "Ambil"),
+                    // MyButton(iconimage: "assets/images/pilah.jpg", buttontext: "Pilah"),
+                    // MyButton(iconimage: "assets/images/koin.jpg", buttontext: "Tukar"),
+                  ],
+                ),
+              ),
+
+             
+
+             Padding(
+               padding: const EdgeInsets.all(25.0),
+               child: Column(
+                children: [
+                  Text(
+                              'SAMPEL',
+                              style: GoogleFonts.interTight(
+                                textStyle: TextStyle(color: Color(0xFF00A368), letterSpacing: .5,fontWeight: FontWeight.bold,fontSize: 30,),
+                              ),
+                            ),
+                              Text(
+                              'Aplikasi Manajemen Pengelolaan Sampah',
+                              style: GoogleFonts.lato(
+                                textStyle: TextStyle(color: Color(0xFF00A368), letterSpacing: .5,fontWeight: FontWeight.bold,fontSize: 18,),
+                              ),
+                            ),
+                            SizedBox(height: 20,),
+                            Image.asset("assets/images/sp.jpeg"),
+                            SizedBox(height: 20,),
+                  SizedBox(height: 30,),
+                  Text(
+                        "Jadwal Penjemputan Sampah",
+                        style:  GoogleFonts.lato(
+                      textStyle: TextStyle(color: Color(0xFF00A368), letterSpacing: .5,fontWeight: FontWeight.bold,fontSize: 25,),
+                    ),
+                        ),
+                  SizedBox(height: 15,),
+                  //wrapwithbuilder
+                  FutureBuilder<List<Jadwal>>(
+                  future: getJadwal(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      // until data is fetched, show loader
+                      return const CircularProgressIndicator();
+                    } else if (snapshot.hasData) {
+                      // once data is fetched, display it on screen (call buildPosts())
+                      final posts = snapshot.data!;
+                      return buildPosts(posts);
+                    } else {
+                      // if no data, show simple Text
+                      return const Text("No data available");
+                    }
+                  },
+                ),
+               
+               ],),
+             )
+
+
+          ],
+        )
+      )),
     );
   }
   
@@ -134,13 +234,13 @@ Future<Datum> getData() async {
                 );
                 },
                 child: Container(
-                  color: Colors.white,
+                  color: Colors.grey[100],
                 margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                 padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                 height: 100,
                   child: ListTile(
                               leading: Icon(Icons.location_city,color: Color(0xFF00A368),),
-                              title: Text("Mulai: ${dateTime.day}-${dateTime.month}-${dateTime.year}  Selesai: ${dateTimes.day}-${dateTimes.month}-${dateTimes.year}", style: TextStyle(fontWeight: FontWeight.bold),),
+                              title: Text("Mulai: ${dateTime.day}-${dateTime.month}-${dateTime.year}               Selesai: ${dateTimes.day}-${dateTimes.month}-${dateTimes.year}", style: TextStyle(fontWeight: FontWeight.bold),),
                               subtitle: Text(post.jadwalTugas.keterangan.toString()),
                               // trailing: Icon(CupertinoIcons.money_dollar),
                     textColor: Color(0xFF00A368),

@@ -33,7 +33,7 @@ class Welcome {
 }
 
 class Kontribusi {
-    int tukar;
+    double tukar;
 
     Kontribusi({
         required this.tukar,

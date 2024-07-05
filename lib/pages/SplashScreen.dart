@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sipsn/navigation_menu.dart';
 import 'package:sipsn/pages/Homepage.dart';
 import 'package:sipsn/pages/Login.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 
 class SplashScreen extends StatelessWidget {
@@ -12,7 +13,7 @@ class SplashScreen extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage("assets/images/model.jpg"),
+          image: AssetImage("assets/images/sp.jpeg"),
           fit: BoxFit.cover
           ),
       ),
@@ -22,10 +23,19 @@ class SplashScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              // Image.asset(
-              //   "assets/images/jual.jpg",
-              //   height: 300,
-              // ),
+              Text(
+              'SAMPEL',
+              style: GoogleFonts.interTight(
+                textStyle: TextStyle(color: Color(0xFF00A368), letterSpacing: .5,fontWeight: FontWeight.bold,fontSize: 30,),
+              ),
+            ),
+              Text(
+              'Aplikasi Manajemen Pengelolaan Sampah',
+              style: GoogleFonts.lato(
+                textStyle: TextStyle(color: Color(0xFF00A368), letterSpacing: .5,fontWeight: FontWeight.bold,fontSize: 18,),
+              ),
+            ),
+              SizedBox(height: 450,),
               InkWell(
                 onTap: () {
                   Navigator.of(context).push(
@@ -41,11 +51,10 @@ class SplashScreen extends StatelessWidget {
                     color: Color(0xFF00A368),
                   ),
                   child: Text(
-                    "Get Started",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
+                    'Get Started',
+                    style: GoogleFonts.lato(
+                      textStyle: TextStyle(color: Colors.white, letterSpacing: .5,fontWeight: FontWeight.bold,fontSize: 18,),
+                    ),
                   ),
                 ),
               ),

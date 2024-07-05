@@ -9,6 +9,8 @@ import 'package:sipsn/model/Petugas/getkategori.dart';
 import 'package:sipsn/model/Petugas/getnasabah.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sipsn/navigation_menu.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 
 class ChangeTrash extends StatefulWidget {
   late final int id;
@@ -55,7 +57,7 @@ class _ChangeTrashState extends State<ChangeTrash> {
     final Map<String, String> headers = {
       'Authorization': 'Bearer $token'
     };
-    final response = await myHttp.get(Uri.parse('http://192.168.1.5:8080/api/lihat-kategori-sampah'), headers: headers);
+    final response = await myHttp.get(Uri.parse('http://10.0.172.63:8080/api/lihat-kategori-sampah'), headers: headers);
 
     if (response.statusCode == 200) {
       final datas = json.decode(response.body);
@@ -71,7 +73,7 @@ class _ChangeTrashState extends State<ChangeTrash> {
     final Map<String, String> headers = {
       'Authorization': 'Bearer $token'
     };
-    final response = await myHttp.get(Uri.parse('http://192.168.1.5:8080/api/lihat-nasabah'), headers: headers);
+    final response = await myHttp.get(Uri.parse('http://10.0.172.63:8080/api/lihat-nasabah'), headers: headers);
 
     if (response.statusCode == 200) {
       final datas = json.decode(response.body);
@@ -87,7 +89,7 @@ class _ChangeTrashState extends State<ChangeTrash> {
     final Map<String, String> headers = {
       'Authorization': 'Bearer $token'
     };
-    final response = await myHttp.get(Uri.parse('http://192.168.1.5:8080/api/pemasukan-sampah/${widget.id}'), headers: headers);
+    final response = await myHttp.get(Uri.parse('http://10.0.172.63:8080/api/pemasukan-sampah/${widget.id}'), headers: headers);
 
     if (response.statusCode == 200) {
       final datas = json.decode(response.body);
@@ -99,7 +101,7 @@ class _ChangeTrashState extends State<ChangeTrash> {
   }
 
   //  Future<List<Nasabahp>> fetchDropdownItems() async {
-  //   final response = await myHttp.get(Uri.parse('http://192.168.1.5:8080/api/lihat-nasabah'));
+  //   final response = await myHttp.get(Uri.parse('http://10.0.172.63:8080/api/lihat-nasabah'));
 
   //   if (response.statusCode == 200) {
   //     final datas = json.decode(response.body);
@@ -117,7 +119,7 @@ class _ChangeTrashState extends State<ChangeTrash> {
       'Content-Type': 'application/json'
     };
     final response = await myHttp.post(
-      Uri.parse('http://192.168.1.5:8080/api/pemasukan-sampah/${widget.id}'),
+      Uri.parse('http://10.0.172.63:8080/api/pemasukan-sampah/${widget.id}'),
       headers: headers,
       body: json.encode({
         "kategori_sampah_id": _selectedkategori,
@@ -147,24 +149,92 @@ class _ChangeTrashState extends State<ChangeTrash> {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('kk:mm:ss \n EEE d MMM').format(now);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Form Penukaran Sampah"),
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("assets/images/sp.jpeg"),
+          fit: BoxFit.cover
+          ),
       ),
-      backgroundColor: Color(0xFF00A368),
-      body: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  color: Colors.white,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-                    child: Form(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          FutureBuilder<List<Nasabahp>>(
-                            future: _nasabah,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Color(0xFF00A368),
+          title: Text(
+            "Form Penukaran Sampah",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.interTight(
+                      textStyle: TextStyle(color: Colors.white, letterSpacing: .5,fontWeight: FontWeight.bold,fontSize: 20,),
+                    ),
+            ),
+        ),
+        backgroundColor: Colors.transparent,
+        body: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    color: Colors.white,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+                      child: Form(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                            'SAMPEL',
+                            style: GoogleFonts.interTight(
+                              textStyle: TextStyle(color: Color(0xFF00A368), letterSpacing: .5,fontWeight: FontWeight.bold,fontSize: 30,),
+                            ),
+                          ),
+                            Text(
+                            'Aplikasi Manajemen Pengelolaan Sampah',
+                            style: GoogleFonts.lato(
+                              textStyle: TextStyle(color: Color(0xFF00A368), letterSpacing: .5,fontWeight: FontWeight.bold,fontSize: 18,),
+                            ),
+                          ),
+                          SizedBox(height: 20,),
+                          Text(
+                            'Silahkan Input Sampah',
+                            style: GoogleFonts.lato(
+                              textStyle: TextStyle(color: Color(0xFF00A368), letterSpacing: .5,fontSize: 18,),
+                            ),
+                          ),
+                          SizedBox(height: 10,),
+                            FutureBuilder<List<Nasabahp>>(
+                              future: _nasabah,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return CircularProgressIndicator();
+                                } else if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                                  return Text('No items available');
+                                } else {
+                                  return DropdownButton(
+                                    value: _selectednasabah,
+                                    hint: Text(
+                                      'Nama Nasabah',
+                                      style: GoogleFonts.lato(
+                                      textStyle: TextStyle(color: Color(0xFF00A368), letterSpacing: .5,fontSize: 18,),
+                                    ),
+                                      ),
+                                    isExpanded: true,
+                                    items: snapshot.data!.map((Nasabahp item) {
+                                      return DropdownMenuItem(
+                                        value: item.id,
+                                        child: Text(item.name),
+                                      );
+                                    }).toList(),
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        _selectednasabah = newValue;
+                                      });
+                                    },
+                                  );
+                                }
+                              },
+                            ),
+                            FutureBuilder<List<Kategori>>(
+                            future: _kategori,
                             builder: (context, snapshot) {
                               if (snapshot.connectionState == ConnectionState.waiting) {
                                 return CircularProgressIndicator();
@@ -174,74 +244,56 @@ class _ChangeTrashState extends State<ChangeTrash> {
                                 return Text('No items available');
                               } else {
                                 return DropdownButton(
-                                  value: _selectednasabah,
-                                  hint: Text('Nama Nasabah'),
+                                  value: _selectedkategori,
+                                  hint: Text(
+                                      'Jenis Sampah',
+                                      style: GoogleFonts.lato(
+                                      textStyle: TextStyle(color: Color(0xFF00A368), letterSpacing: .5,fontSize: 18,),
+                                    ),
+                                      ),
                                   isExpanded: true,
-                                  items: snapshot.data!.map((Nasabahp item) {
+                                  items: snapshot.data!.map((Kategori item) {
                                     return DropdownMenuItem(
                                       value: item.id,
-                                      child: Text(item.name),
+                                      child: Text(item.jenisSampah),
                                     );
                                   }).toList(),
                                   onChanged: (newValue) {
                                     setState(() {
-                                      _selectednasabah = newValue;
+                                      _selectedkategori = newValue;
                                     });
                                   },
                                 );
                               }
                             },
                           ),
-                          FutureBuilder<List<Kategori>>(
-                          future: _kategori,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return CircularProgressIndicator();
-                            } else if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                              return Text('No items available');
-                            } else {
-                              return DropdownButton(
-                                value: _selectedkategori,
-                                hint: Text('Jenis Sampah'),
-                                isExpanded: true,
-                                items: snapshot.data!.map((Kategori item) {
-                                  return DropdownMenuItem(
-                                    value: item.id,
-                                    child: Text(item.jenisSampah),
-                                  );
-                                }).toList(),
-                                onChanged: (newValue) {
-                                  setState(() {
-                                    _selectedkategori = newValue;
-                                  });
-                                },
-                              );
-                            }
-                          },
+                            
+                            TextFormField(
+                              controller: beratController,
+                              decoration: InputDecoration(
+                                  hintText: "Berat (Kg)",
+                                  border: OutlineInputBorder()),
+                            ),
+                            SizedBox(height: 30),
+                            ElevatedButton(
+                              onPressed: () {
+                                changepoint();
+                              },
+                              child: Text(
+                                      'Submit',
+                                      style: GoogleFonts.lato(
+                                      textStyle: TextStyle(color: Color(0xFF00A368), letterSpacing: .5,fontSize: 18,),
+                                    ),
+                                      ),
+                            ),
+                          ],
                         ),
-                          
-                          TextFormField(
-                            controller: beratController,
-                            decoration: InputDecoration(
-                                hintText: "Berat (Kg)",
-                                border: OutlineInputBorder()),
-                          ),
-                          SizedBox(height: 30),
-                          ElevatedButton(
-                            onPressed: () {
-                              changepoint();
-                            },
-                            child: Text("Submit"),
-                          ),
-                        ],
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+      ),
     );
   }
 }

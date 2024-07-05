@@ -6,6 +6,10 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as myHttp;
 import 'dart:convert';
+import 'package:google_fonts/google_fonts.dart';
+
+
+import 'package:sipsn/pages/TransDetail.dart';
 
 class Transaction extends StatefulWidget {
   const Transaction({super.key});
@@ -36,7 +40,7 @@ class _TransactionState extends State<Transaction> {
     };
     final response = await myHttp.get(
       // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
-      Uri.parse('http://192.168.1.5:8080/api/lihat-riwayat-tukar-poin-petugas'),
+      Uri.parse('http://10.0.172.63:8080/api/lihat-riwayat-tukar-poin-petugas'),
       headers: headers,
     );
     Map<String, dynamic> jsonResult = jsonDecode(response.body);
@@ -61,7 +65,7 @@ class _TransactionState extends State<Transaction> {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('kk:mm:ss \n EEE d MMM').format(now);
     return Scaffold( 
-      backgroundColor: Color(0xFF00A368),
+      backgroundColor: Colors.white,
     body: Center(
         // FutureBuilder
         child: FutureBuilder<List<Riwayatp>>(
@@ -97,31 +101,51 @@ class _TransactionState extends State<Transaction> {
   }
 
 Widget buildPosts(List<Riwayatp> posts) {
-    return SafeArea(
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-            children: List.generate(posts.length, (index) {
-              // SizedBox(height: 10,);
-              final post = posts[index];
-              DateTime dateTime = DateTime.parse(post.tanggal.toString());
-              return GestureDetector(
-                child: Container(
-                  color: Colors.white,
-                margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                height: 100,
-                  child: ListTile(
-                              leading: Icon(Icons.location_city,color: Color(0xFF00A368),),
-                              title: Text("Tanggal : ${dateTime.day}-${dateTime.month}-${dateTime.year}", style: TextStyle(fontWeight: FontWeight.bold),),
-                              subtitle: Text(" Jumlah Point Ditukar : ${post.status}"),
-                              // trailing: Icon(CupertinoIcons.money_dollar),
-                    textColor: Color(0xFF00A368),
+    return Scaffold(
+      appBar: AppBar(
+        title: 
+          Text(
+              "Riwayat Tukar Poin",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.interTight(
+                        textStyle: TextStyle(color: Colors.white, letterSpacing: .5,fontWeight: FontWeight.bold,fontSize: 20,),
+                      ),
+              ),
+            backgroundColor: Color(0xFF00A368),
+        ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+              children: List.generate(posts.length, (index) {
+                // SizedBox(height: 10,);
+                final post = posts[index];
+                DateTime dateTime = DateTime.parse(post.tanggal.toString());
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => TransDetail(id: post.id, tanggal: post.tanggal, status: post.status, poin: post.kurang_poin),
+                          ),
+                    );
+                  },
+                  child: Container(
+                    color: Colors.grey[100],
+                  margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                  height: 100,
+                    child: ListTile(
+                                leading: Icon(Icons.transfer_within_a_station,color: Color(0xFF00A368),),
+                                title: Text("Tanggal : ${dateTime.day}-${dateTime.month}-${dateTime.year}", style: TextStyle(fontWeight: FontWeight.bold),),
+                                subtitle: Text(" Jumlah Point Ditukar : ${post.status}"),
+                                // trailing: Icon(CupertinoIcons.money_dollar),
+                      textColor: Color(0xFF00A368),
+                    ),
                   ),
-                ),
-              );
-            }),
-            ),
+                );
+              }),
+              ),
+        ),
       ),
     );
 
