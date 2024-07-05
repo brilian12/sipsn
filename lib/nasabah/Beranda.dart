@@ -51,7 +51,7 @@ class _BerandaState extends State<Beranda> {
     };
     final response = await myHttp.get(
       // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
-      Uri.parse('http://192.168.1.5:8080/api/profile-nasabah'),
+      Uri.parse('http://10.0.172.63:8080/api/profile-nasabah'),
       headers: headers,
     );
     final Map<String, dynamic> jsonResult = jsonDecode(response.body);
@@ -67,7 +67,7 @@ class _BerandaState extends State<Beranda> {
     };
     final response = await myHttp.get(
       // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
-      Uri.parse('http://192.168.1.5:8080/api/lihat-poin'),
+      Uri.parse('http://10.0.172.63:8080/api/lihat-poin'),
       headers: headers,
     );
     final Map<String, dynamic> jsonResult = jsonDecode(response.body);
@@ -83,7 +83,7 @@ class _BerandaState extends State<Beranda> {
     };
     final response = await myHttp.get(
       // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
-      Uri.parse('http://192.168.1.5:8080/api/kontribusi-sampah'),
+      Uri.parse('http://10.0.172.63:8080/api/kontribusi-sampah'),
       headers: headers,
     );
     final Map<String, dynamic> jsonResult = jsonDecode(response.body);
@@ -99,7 +99,7 @@ class _BerandaState extends State<Beranda> {
     };
     final response = await myHttp.get(
       // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
-      Uri.parse('http://192.168.1.5:8080/api/pemasukan-sampah'),
+      Uri.parse('http://10.0.172.63:8080/api/pemasukan-sampah'),
       headers: headers,
     );
     final Map<String, dynamic> jsonResult = jsonDecode(response.body);
@@ -115,7 +115,7 @@ class _BerandaState extends State<Beranda> {
     };
     final response = await myHttp.get(
       // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
-      Uri.parse('http://192.168.1.5:8080/api/kategori-sampah'),
+      Uri.parse('http://10.0.172.63:8080/api/kategori-sampah'),
       headers: headers,
     );
     Map<String, dynamic> jsonResult = jsonDecode(response.body);
@@ -332,7 +332,7 @@ class _BerandaState extends State<Beranda> {
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Image.network("http://192.168.1.5:8080/storage/${post.gambar}"),
+                  child: Image.network("http://10.0.172.63:8080/storage/${post.gambar}"),
                 ),
                 SizedBox(width: 20),
                 Column(
