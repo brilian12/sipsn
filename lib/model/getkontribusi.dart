@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 
+
 Welcome welcomeFromJson(String str) => Welcome.fromJson(json.decode(str));
 
 String welcomeToJson(Welcome data) => json.encode(data.toJson());
@@ -34,13 +35,16 @@ class Welcome {
 
 class Kontribusi {
     double tukar;
+    int poin;
 
     Kontribusi({
         required this.tukar,
+        required this.poin
     });
 
     factory Kontribusi.fromJson(Map<String, dynamic> json) => Kontribusi(
-        tukar: json["tukar"],
+        tukar: json['tukar']?.toDouble() ?? 0.0,  // Handle potential null values
+      poin: json['poin'] ?? 0,  // Assuming `poin` is an integer
     );
 
     Map<String, dynamic> toJson() => {

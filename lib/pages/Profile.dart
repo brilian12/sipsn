@@ -46,7 +46,7 @@ class _ProfileState extends State<Profile> {
     };
     final response = await myHttp.get(
       // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
-      Uri.parse('http://10.0.172.63:8080/api/profile-petugas'),
+      Uri.parse('https://cleanearth.sintrenayu.com/api/profile-petugas'),
       headers: headers,
     );
     final Map<String, dynamic> jsonResult = jsonDecode(response.body);

@@ -39,7 +39,7 @@ class _TransaksiState extends State<Transaksi> {
   };
 
   final response = await myHttp.get(
-    Uri.parse('http://10.0.172.63:8080/api/lihat-riwayat-tukar-poin'),
+    Uri.parse('https://cleanearth.sintrenayu.com/api/lihat-riwayat-tukar-poin'),
     headers: headers,
   );
 

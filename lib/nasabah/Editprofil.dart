@@ -45,7 +45,7 @@ Future update() async {
       'Authorization': 'Bearer ' + (await _token)
     };
     var response = await myHttp.post(
-        Uri.parse('http://10.0.172.63:8080/api/edit/profile-nasabah'),
+        Uri.parse('https://cleanearth.sintrenayu.com/api/edit/profile-nasabah'),
         headers: headers,
         // Uri.parse('http://pkmsmkteladankertasemaya.com/api/login'),
         body:  {

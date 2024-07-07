@@ -51,7 +51,7 @@ Future<Datum> getData() async {
     };
     final response = await myHttp.get(
       // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
-      Uri.parse('http://10.0.172.63:8080/api/profile-petugas'),
+      Uri.parse('https://cleanearth.sintrenayu.com/api/profile-petugas'),
       headers: headers,
     );
     final Map<String, dynamic> jsonResult = jsonDecode(response.body);
@@ -70,7 +70,7 @@ Future<Datum> getData() async {
     };
     final response = await myHttp.get(
       // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
-      Uri.parse('http://10.0.172.63:8080/api/lihat-lokasi'),
+      Uri.parse('https://cleanearth.sintrenayu.com/api/lihat-lokasi'),
       headers: headers,
     );
     Map<String, dynamic> jsonResult = jsonDecode(response.body);
@@ -115,12 +115,16 @@ Future<Datum> getData() async {
                       return Center(child: Text(snapshot.error.toString()));
                     }
                     else {
-                      return Text(
-                        "Hallo, ${snapshot.data!.name}",
-                        style:  GoogleFonts.interTight(
-                      textStyle: TextStyle(color: Color(0xFF00A368), letterSpacing: .5,fontWeight: FontWeight.bold,fontSize: 30,),
+                      return Container(
+                              width: MediaQuery.of(context).size.width * 0.5, // Adjust width as necessary
+                              child: Text(
+                                "Hallo, ${snapshot.data!.name}",
+                                style: GoogleFonts.interTight(
+                                textStyle: TextStyle(color: Color(0xFF00A368), letterSpacing: .5,fontWeight: FontWeight.bold,fontSize: 22,),
                     ),
-                        );
+                                softWrap: true,
+                              ),
+                            );
                     }
                   },
                 ),

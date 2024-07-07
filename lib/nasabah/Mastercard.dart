@@ -41,11 +41,15 @@ class MesterCard extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 10,),
-                      Text(
-                        "${saldo} " + satuan,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        child: Text(
+                          "${saldo} " + satuan,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24
+                          ),
+                          softWrap: true,
                         ),
                       ),
                       SizedBox(height: 30,),

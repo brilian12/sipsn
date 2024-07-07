@@ -40,7 +40,7 @@ class _TransactionState extends State<Transaction> {
     };
     final response = await myHttp.get(
       // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
-      Uri.parse('http://10.0.172.63:8080/api/lihat-riwayat-tukar-poin-petugas'),
+      Uri.parse('https://cleanearth.sintrenayu.com/api/lihat-riwayat-tukar-poin-petugas'),
       headers: headers,
     );
     Map<String, dynamic> jsonResult = jsonDecode(response.body);

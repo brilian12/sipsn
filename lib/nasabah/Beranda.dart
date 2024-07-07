@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as myHttp;
 import 'package:sipsn/nasabah/button.dart';
 import 'package:sipsn/nasabah/sampah.dart';
+import 'package:sipsn/pages/Login.dart';
 import 'dart:convert';
 import 'dart:developer';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -51,7 +52,7 @@ class _BerandaState extends State<Beranda> {
     };
     final response = await myHttp.get(
       // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
-      Uri.parse('http://10.0.172.63:8080/api/profile-nasabah'),
+      Uri.parse('https://cleanearth.sintrenayu.com/api/profile-nasabah'),
       headers: headers,
     );
     final Map<String, dynamic> jsonResult = jsonDecode(response.body);
@@ -67,7 +68,7 @@ class _BerandaState extends State<Beranda> {
     };
     final response = await myHttp.get(
       // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
-      Uri.parse('http://10.0.172.63:8080/api/lihat-poin'),
+      Uri.parse('https://cleanearth.sintrenayu.com/api/lihat-poin'),
       headers: headers,
     );
     final Map<String, dynamic> jsonResult = jsonDecode(response.body);
@@ -77,20 +78,31 @@ class _BerandaState extends State<Beranda> {
   }
 
   Future<Kontribusi> getKontribusi() async {
-    Kontribusi user;
-    final Map<String, String> headers = {
-      'Authorization': 'Bearer ' + (await _token)
-    };
-    final response = await myHttp.get(
-      // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
-      Uri.parse('http://10.0.172.63:8080/api/kontribusi-sampah'),
-      headers: headers,
-    );
+  Kontribusi user;
+  final Map<String, String> headers = {
+    'Authorization': 'Bearer ' + (await _token)
+  };
+  final response = await myHttp.get(
+    Uri.parse('https://cleanearth.sintrenayu.com/api/kontribusi-sampah'),
+    headers: headers,
+  );
+
+  if (response.statusCode == 200) {
     final Map<String, dynamic> jsonResult = jsonDecode(response.body);
-    user = Kontribusi.fromJson(jsonResult['data']);
-    log(user.toString());
-    return user;
+
+    log(jsonResult.toString()); // Log the entire JSON response
+
+    if (jsonResult['data'] != null) {
+      user = Kontribusi.fromJson(jsonResult['data']);
+      log(user.toString());
+      return user;
+    } else {
+      throw Exception("Failed to load kontribusi data");
+    }
+  } else {
+    throw Exception("Failed to load kontribusi data");
   }
+}
 
   Future<Pemasukan> getPemasukan() async {
     Pemasukan user;
@@ -99,7 +111,7 @@ class _BerandaState extends State<Beranda> {
     };
     final response = await myHttp.get(
       // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
-      Uri.parse('http://10.0.172.63:8080/api/pemasukan-sampah'),
+      Uri.parse('https://cleanearth.sintrenayu.com/api/pemasukan-sampah'),
       headers: headers,
     );
     final Map<String, dynamic> jsonResult = jsonDecode(response.body);
@@ -115,7 +127,7 @@ class _BerandaState extends State<Beranda> {
     };
     final response = await myHttp.get(
       // Uri.parse('http://pkmsmkteladankertasemaya.com/api/profile'),
-      Uri.parse('http://10.0.172.63:8080/api/kategori-sampah'),
+      Uri.parse('https://cleanearth.sintrenayu.com/api/kategori-sampah'),
       headers: headers,
     );
     Map<String, dynamic> jsonResult = jsonDecode(response.body);
@@ -134,10 +146,59 @@ class _BerandaState extends State<Beranda> {
     // return jsonResult.map((e) => Riwayat.fromJson(e)).toList();
   }
 
+  void _logout(BuildContext context) async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => Login()),
+      );
+    } catch (e) {
+      print('Error during logout: $e');
+    }
+  }
+
+  Future<void> _showLogoutConfirmationDialog(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Konfirmasi Logout'),
+          content: Text('Apakah Anda yakin ingin keluar dari Aplikasi ?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Batal'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Tutup dialog
+              },
+            ),
+            TextButton(
+              child: Text('Keluar'),
+              onPressed: () {
+                _logout(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
 
   Widget build(BuildContext context) {
     return Scaffold(
+      // appBar: AppBar(
+      //   leading: ElevatedButton(
+      //                 child: const Text('Logout'),
+      //                 onPressed: () {
+      //                   _showLogoutConfirmationDialog(context);
+      //                 },
+      //                 style: ElevatedButton.styleFrom(
+      //                   backgroundColor: Colors.red,
+      //                 ),
+      //               ),
+      // ),
       backgroundColor: Colors.white10,
       body: SafeArea(
           child: SingleChildScrollView(
@@ -158,12 +219,16 @@ class _BerandaState extends State<Beranda> {
                       return Center(child: Text(snapshot.error.toString()));
                     }
                     else {
-                      return Text(
-                        "Hallo, ${snapshot.data!.name}",
-                        style:  GoogleFonts.interTight(
-                      textStyle: TextStyle(color: Color(0xFF00A368), letterSpacing: .5,fontWeight: FontWeight.bold,fontSize: 30,),
+                      return Container(
+                              width: MediaQuery.of(context).size.width * 0.5, // Adjust width as necessary
+                              child: Text(
+                                "Hallo, ${snapshot.data!.name}",
+                                style: GoogleFonts.interTight(
+                                textStyle: TextStyle(color: Color(0xFF00A368), letterSpacing: .5,fontWeight: FontWeight.bold,fontSize: 22,),
                     ),
-                        );
+                                softWrap: true,
+                              ),
+                            );
                     }
                   },
                 ),
@@ -200,8 +265,8 @@ class _BerandaState extends State<Beranda> {
                           satuan: "Rupiah",
                           point: "Point", 
                           saldo: snapshot.data!.total.toString(), 
-                          date: "12/08/2024", 
-                          cardnumber: "1234567", 
+                          date: "", 
+                          cardnumber: "Aplikasi Manajemen Pengelolaan Sampah", 
                           color: Color(0xFF00A368),
                       );
                         }
@@ -221,8 +286,8 @@ class _BerandaState extends State<Beranda> {
                           satuan: "Kg",
                           point: "Kontribusi Penjualan Sampah", 
                           saldo: snapshot.data!.tukar.toString(), 
-                          date: "12/08/2024", 
-                          cardnumber: "1234567", 
+                          date: "", 
+                          cardnumber: "Aplikasi Manajemen Pengelolaan Sampah", 
                           color: Colors.deepPurple,
                       );
                         }
@@ -242,8 +307,8 @@ class _BerandaState extends State<Beranda> {
                           satuan: "Kali",
                           point: "Banyak Penukaran Poin", 
                           saldo: snapshot.data!.tukar.toString(), 
-                          date: "12/08/2024", 
-                          cardnumber: "1234567", 
+                          date: "", 
+                          cardnumber: "Aplikasi Manajemen Pengelolaan Sampah", 
                           color: Colors.blue,
                       );
                         }
@@ -266,14 +331,18 @@ class _BerandaState extends State<Beranda> {
 
               SizedBox(height: 25,),
 
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Container(
+                child: Column(
                   children: [
-                    MyButton(iconimage: "assets/images/ambil.jpg", buttontext: "Ambil"),
-                    MyButton(iconimage: "assets/images/pilah.jpg", buttontext: "Pilah"),
-                    MyButton(iconimage: "assets/images/koin.jpg", buttontext: "Tukar"),
+                     Text(
+                        "3 Cara Mudah Menjual Sampah",
+                        textAlign: TextAlign.center,
+                        style:  GoogleFonts.interTight(
+                      textStyle: TextStyle(color: Color(0xFF00A368), letterSpacing: .5,fontWeight: FontWeight.bold,fontSize: 20,),
+                    ),
+                        ),
+                    SizedBox(height: 10,),
+                    Image.asset("assets/images/poster.png")
                   ],
                 ),
               ),
@@ -284,6 +353,14 @@ class _BerandaState extends State<Beranda> {
                padding: const EdgeInsets.all(25.0),
                child: Column(
                 children: [
+                  Text(
+                        "Daftar Harga Sampah",
+                        textAlign: TextAlign.center,
+                        style:  GoogleFonts.interTight(
+                      textStyle: TextStyle(color: Color(0xFF00A368), letterSpacing: .5,fontWeight: FontWeight.bold,fontSize: 20,),
+                    ),
+                        ),
+                  SizedBox(height: 10,),
                   //wrapwithbuilder
                   FutureBuilder<List<Kategori>>(
                   future: getRiwayat(),
@@ -313,57 +390,71 @@ class _BerandaState extends State<Beranda> {
   }
 
 
-  Widget buildPosts(List<Kategori> posts) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 25.0),
+ Widget buildPosts(List<Kategori> posts) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 25.0),
+    child: SingleChildScrollView(
       child: Column(
         children: posts.map((post) {
           return GestureDetector(
             onTap: () {},
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                  height: 80,
-                  padding: EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(12),
+            child: Container(
+              margin: EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        height: 80,
+                        width: 80,
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Image.network(
+                          "https://cleanearth.sintrenayu.com/storage/${post.gambar}",
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                              width: MediaQuery.of(context).size.width * 0.5, // Adjust width as necessary
+                              child: Text(
+                                post.jenisSampah,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                                softWrap: true,
+                              ),
+                            ),
+                          SizedBox(height: 8),
+                          Text(
+                            "Point: ${post.poinSampah}",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  child: Image.network("http://10.0.172.63:8080/storage/${post.gambar}"),
-                ),
-                SizedBox(width: 20),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      post.jenisSampah,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      "Point : ${post.poinSampah}",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
-                  ],
-                ),
-                Icon(Icons.arrow_forward_ios)
-              ],
+                  Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                ],
+              ),
             ),
           );
         }).toList(),
       ),
-    );
-  }
+    ),
+  );
+}
+
 }
 

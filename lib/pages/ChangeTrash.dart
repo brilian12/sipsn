@@ -57,7 +57,7 @@ class _ChangeTrashState extends State<ChangeTrash> {
     final Map<String, String> headers = {
       'Authorization': 'Bearer $token'
     };
-    final response = await myHttp.get(Uri.parse('http://10.0.172.63:8080/api/lihat-kategori-sampah'), headers: headers);
+    final response = await myHttp.get(Uri.parse('https://cleanearth.sintrenayu.com/api/lihat-kategori-sampah'), headers: headers);
 
     if (response.statusCode == 200) {
       final datas = json.decode(response.body);
@@ -73,7 +73,7 @@ class _ChangeTrashState extends State<ChangeTrash> {
     final Map<String, String> headers = {
       'Authorization': 'Bearer $token'
     };
-    final response = await myHttp.get(Uri.parse('http://10.0.172.63:8080/api/lihat-nasabah'), headers: headers);
+    final response = await myHttp.get(Uri.parse('https://cleanearth.sintrenayu.com/api/lihat-nasabah'), headers: headers);
 
     if (response.statusCode == 200) {
       final datas = json.decode(response.body);
@@ -89,7 +89,7 @@ class _ChangeTrashState extends State<ChangeTrash> {
     final Map<String, String> headers = {
       'Authorization': 'Bearer $token'
     };
-    final response = await myHttp.get(Uri.parse('http://10.0.172.63:8080/api/pemasukan-sampah/${widget.id}'), headers: headers);
+    final response = await myHttp.get(Uri.parse('https://cleanearth.sintrenayu.com/api/pemasukan-sampah/${widget.id}'), headers: headers);
 
     if (response.statusCode == 200) {
       final datas = json.decode(response.body);
@@ -101,7 +101,7 @@ class _ChangeTrashState extends State<ChangeTrash> {
   }
 
   //  Future<List<Nasabahp>> fetchDropdownItems() async {
-  //   final response = await myHttp.get(Uri.parse('http://10.0.172.63:8080/api/lihat-nasabah'));
+  //   final response = await myHttp.get(Uri.parse('https://cleanearth.sintrenayu.com/api/lihat-nasabah'));
 
   //   if (response.statusCode == 200) {
   //     final datas = json.decode(response.body);
@@ -119,7 +119,7 @@ class _ChangeTrashState extends State<ChangeTrash> {
       'Content-Type': 'application/json'
     };
     final response = await myHttp.post(
-      Uri.parse('http://10.0.172.63:8080/api/pemasukan-sampah/${widget.id}'),
+      Uri.parse('https://cleanearth.sintrenayu.com/api/pemasukan-sampah/${widget.id}'),
       headers: headers,
       body: json.encode({
         "kategori_sampah_id": _selectedkategori,

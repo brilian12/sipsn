@@ -44,7 +44,7 @@ class _ChangePointState extends State<ChangePoint> {
     final Map<String, String> headers = {
       'Authorization': 'Bearer $token'
     };
-    final response = await http.get(Uri.parse('http://10.0.172.63:8080/api/lihat-kategori-sampah'), headers: headers);
+    final response = await http.get(Uri.parse('https://cleanearth.sintrenayu.com/api/lihat-kategori-sampah'), headers: headers);
 
     if (response.statusCode == 200) {
       final datas = json.decode(response.body);
@@ -60,7 +60,7 @@ class _ChangePointState extends State<ChangePoint> {
     final Map<String, String> headers = {
       'Authorization': 'Bearer $token'
     };
-    final response = await http.get(Uri.parse('http://10.0.172.63:8080/api/lihat-kelola-poin'), headers: headers);
+    final response = await http.get(Uri.parse('https://cleanearth.sintrenayu.com/api/lihat-kelola-poin'), headers: headers);
 
     if (response.statusCode == 200) {
       final datas = json.decode(response.body);
@@ -76,7 +76,7 @@ class _ChangePointState extends State<ChangePoint> {
     final Map<String, String> headers = {
       'Authorization': 'Bearer $token'
     };
-    final response = await http.get(Uri.parse('http://10.0.172.63:8080/api/lihat-nasabah'), headers: headers);
+    final response = await http.get(Uri.parse('https://cleanearth.sintrenayu.com/api/lihat-nasabah'), headers: headers);
 
     if (response.statusCode == 200) {
       final datas = json.decode(response.body);
@@ -94,7 +94,7 @@ class _ChangePointState extends State<ChangePoint> {
       'Content-Type': 'application/json'
     };
     final response = await http.post(
-      Uri.parse('http://10.0.172.63:8080/api/tukar-poin'),
+      Uri.parse('https://cleanearth.sintrenayu.com/api/tukar-poin'),
       headers: headers,
       body: json.encode({
         "nasabah_id": _selectednasabah,
